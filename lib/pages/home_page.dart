@@ -1,3 +1,5 @@
+import 'package:ecommerce/services/firebase/auth.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
@@ -10,6 +12,8 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+
+  final User? user=Auth().currentUser;
   
   @override
   Widget build(BuildContext context) {
@@ -23,7 +27,11 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            const Text('Login Page'),
+            Text(user?.email ??'user name'),
+            SizedBox(height: 20,),
+            ElevatedButton(onPressed: (){
+              Auth().logout();
+            }, child: Text("Logout"))
            
           ],
         ),

@@ -18,6 +18,8 @@ class _LoginPageState extends State<LoginPage> {
   bool _isButtonEnabled = false;
   bool _isObscure=true;
 
+  bool _isLoading=false;
+
     @override
   void initState() {
     super.initState();
@@ -87,9 +89,12 @@ class _LoginPageState extends State<LoginPage> {
                     //borderRadius: BorderRadius.circular(8),
                   ),
                    suffixIcon: IconButton(
-                  onPressed: () {
+                  onPressed: _isLoading? null: () {
                     setState(() {
                       _isObscure = !_isObscure;
+                    });
+                    setState(() {
+                      _isLoading=true;
                     });
                   },
                   icon: Icon(_isObscure ? Icons.visibility : Icons.visibility_off, color: Colors.black,)
@@ -117,7 +122,13 @@ class _LoginPageState extends State<LoginPage> {
                         await Auth().loginWithEmailAndPassword(
                           _textControllerEmail.text,
                           _textControllerPassword.text);
+                          setState(() {
+                      _isLoading=false;
+                    });
                       }on FirebaseAuthException catch(e){
+                        setState(() {
+                      _isLoading=false;
+                    });
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(content: Text("${e.message}"),
                           behavior: SnackBarBehavior.floating,
