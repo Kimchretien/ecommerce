@@ -1,17 +1,17 @@
 import 'package:ecommerce/services/firebase/auth.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-class LoginPage extends StatefulWidget {
-  const LoginPage({super.key, required this.title});
+class LoginePage extends StatefulWidget {
+  const LoginePage({super.key, required this.title});
 
 
   final String title;
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  State<LoginePage> createState() => _LoginPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _LoginPageState extends State<LoginePage> {
   final _formKey = GlobalKey<FormState>();
   final _textControllerEmail = TextEditingController();
   final _textControllerPassword = TextEditingController();
@@ -62,43 +62,12 @@ class _LoginPageState extends State<LoginPage> {
                  }
               ),
               SizedBox(height: 20,),
-               if(!_forLogin)TextFormField(
-                controller: _textControllerPassword,
-                obscureText: _isObscure,
-                decoration:  InputDecoration(
-                  prefixIcon: Icon(Icons.lock),
-                  hintText: 'Enter your password',
-                  labelText: 'Password *',
-                  border: OutlineInputBorder(
-                    //borderRadius: BorderRadius.circular(8),
-                  ),
-                   suffixIcon: IconButton(
-                  onPressed: _isLoading? null: () {
-                    setState(() {
-                      _isObscure = !_isObscure;
-                    });
-                  },
-                  icon: Icon(_isObscure ? Icons.visibility : Icons.visibility_off, color: Colors.black,)
-                ),
-                ),
-                 validator:(value){
-                  if(value ==null || value.isEmpty){
-                    return 'Password is required';
-                  }else if(value.length<6){
-                  return 'Password must be at least 6 characters';
-                
-                }else{
-                  return null;
-                }
-                 },
-                 
-              ),SizedBox(height: 20,),
                TextFormField(
                 controller: _textControllerPasswordConfirm,
                 obscureText: _isObscure,
                 decoration:  InputDecoration(
                   prefixIcon: Icon(Icons.lock),
-                  hintText: 'Retap your password *',
+                  hintText: 'Enter your password',
                   labelText: 'Password *',
                   border: OutlineInputBorder(
                     //borderRadius: BorderRadius.circular(8),
@@ -124,6 +93,36 @@ class _LoginPageState extends State<LoginPage> {
                 }
                  },
                  
+              ),SizedBox(height: 20,),
+               TextFormField(
+                controller: _textControllerPassword,
+                obscureText: _isObscure,
+                decoration:  InputDecoration(
+                  prefixIcon: Icon(Icons.lock),
+                  hintText: 'Retap your password',
+                  labelText: 'Password *',
+                  border: OutlineInputBorder(
+                    //borderRadius: BorderRadius.circular(8),
+                  ),
+                   suffixIcon: IconButton(
+                  onPressed: _isLoading? null: () {
+                    setState(() {
+                      _isObscure = !_isObscure;
+                    });
+                  },
+                  icon: Icon(_isObscure ? Icons.visibility : Icons.visibility_off, color: Colors.black,)
+                ),
+                ),
+                 validator:(value){
+                  if(value ==null || value.isEmpty){
+                    return 'Password is required';
+                  }else if(value.length<6){
+                  return 'Password must be at least 6 characters';
+                }else{
+                  return null;
+                }
+                 },
+                 
               ),
               SizedBox(height: 20,),
               SizedBox(
@@ -135,15 +134,9 @@ class _LoginPageState extends State<LoginPage> {
                             _isLoading = true;
                       });
                       try{
-                        if(_forLogin){
-                           await Auth().loginWithEmailAndPassword(
+                        await Auth().loginWithEmailAndPassword(
                           _textControllerEmail.text,
                           _textControllerPassword.text);
-                        }else{
-                           await Auth().createUserWithEmailAndPassword(
-                          _textControllerEmail.text,
-                          _textControllerPassword.text);
-                        }
                           setState(() {
                       _isLoading=false;
                     });
@@ -161,28 +154,18 @@ class _LoginPageState extends State<LoginPage> {
                       
                     }
                     },
-                 child:_isLoading ? const CircularProgressIndicator():  Text(_forLogin ? "se connecter": "s'inscrire")),
+                 child:_isLoading ? const CircularProgressIndicator(): const Text("Login")),
               ),
               SizedBox(height: 20,),
               SizedBox(
                 child: TextButton(
                   onPressed: (){
-                    _textControllerEmail.text="";
-                    _textControllerPassword.text="";
-                    _textControllerPasswordConfirm.text="";
                     setState(() {
                       _forLogin=! _forLogin;
                     });
                   } , 
                   child: Text(_forLogin ? "J'ai pas un compte, s'inscrire": "J'ai deja un compte ,se connecter")),
-              ),
-              const Divider(),
-              ElevatedButton.icon(
-                onPressed: (){
-                  Auth().signInWithGoogle();
-                },
-                icon: Image.asset("assets/images/google.png",height: 30,),
-                label: const Text("Continuer avec Google"))
+              )
             ],
           ),
         ),
