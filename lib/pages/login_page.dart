@@ -15,30 +15,12 @@ class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
   final _textControllerEmail = TextEditingController();
   final _textControllerPassword = TextEditingController();
-  bool _isButtonEnabled = false;
   bool _isObscure=true;
 
   bool _isLoading=false;
+  bool _forLogin=true;
 
-    @override
-  void initState() {
-    super.initState();
-    _textControllerPassword.addListener(_checkPasswordLength);
-  }
-
-  void _checkPasswordLength() {
-    final password = _textControllerPassword.text;
-    setState(() {
-      _isButtonEnabled = password.length > 6; // actif si > 6 caractères
-    });
-  }
-
-  @override
-  void dispose() {
-    _textControllerEmail.dispose();
-    _textControllerPassword.dispose();
-    super.dispose();
-  }
+ 
   
   @override
   Widget build(BuildContext context) {
@@ -93,9 +75,6 @@ class _LoginPageState extends State<LoginPage> {
                     setState(() {
                       _isObscure = !_isObscure;
                     });
-                    setState(() {
-                      _isLoading=true;
-                    });
                   },
                   icon: Icon(_isObscure ? Icons.visibility : Icons.visibility_off, color: Colors.black,)
                 ),
@@ -104,7 +83,7 @@ class _LoginPageState extends State<LoginPage> {
                   if(value ==null || value.isEmpty){
                     return 'Password is required';
                   }else if(value.length<6){
-                  return '';
+                  return 'Password must be at least 6 characters';
                 }else{
                   return null;
                 }
@@ -112,12 +91,14 @@ class _LoginPageState extends State<LoginPage> {
                  
               ),
               SizedBox(height: 20,),
-              Container(
-                //margin: const EdgeInsets.only(top: 30),
+              SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
                     onPressed:() async{
                     if (_formKey.currentState!.validate()){
+                          setState(() {
+                            _isLoading = true;
+                      });
                       try{
                         await Auth().loginWithEmailAndPassword(
                           _textControllerEmail.text,
@@ -139,7 +120,13 @@ class _LoginPageState extends State<LoginPage> {
                       
                     }
                     },
-                 child: const Text("Login")),
+                 child:_isLoading ? const CircularProgressIndicator(): const Text("Login")),
+              ),
+              SizedBox(height: 20,),
+              SizedBox(
+                child: TextButton(
+                  onPressed: (){} , 
+                  child: Text(_forLogin ? "J'ai pas un compte, s'inscrire": "J'ai deja un compte ,se connecter")),
               )
             ],
           ),
