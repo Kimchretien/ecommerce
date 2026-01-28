@@ -38,7 +38,7 @@ class PopularItem extends StatelessWidget {
             ),
             const SizedBox(height: 4),
             Text(
-              '$price €',
+              '$price FBU',
               style: const TextStyle(fontSize: 16, color: Colors.green),
             ),
             const SizedBox(height: 4),

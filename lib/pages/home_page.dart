@@ -2,7 +2,7 @@ import 'package:ecommerce/pages/book_page.dart';
 import 'package:ecommerce/pages/electroniques_pages.dart';
 import 'package:ecommerce/pages/gaming_pages.dart';
 import 'package:ecommerce/services/firebase/auth.dart';
-import 'package:ecommerce/widget/popular_item.dart';
+//import 'package:ecommerce/widget/popular_item.dart';
 import 'package:ecommerce/data/products_data.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -30,11 +30,16 @@ class _MyHomePageState extends State<MyHomePage> {
         title: const Text('ShopApp'),
         actions: [
           IconButton(
+            onPressed: (){}, 
+            icon: Icon(Icons.shopping_cart)
+            ),
+          IconButton(
             icon: const Icon(Icons.logout),
             onPressed: () {
               Auth().logout();
             },
-          )
+          ),
+          
         ],
       ),
       body: SingleChildScrollView(
@@ -67,7 +72,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
               /// CATEGORIES
               SizedBox(
-                height: 110,
+                height: 130,
                 child: ListView(
                   scrollDirection: Axis.horizontal,
                   children: [
