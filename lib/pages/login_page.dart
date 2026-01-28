@@ -62,7 +62,7 @@ class _LoginPageState extends State<LoginPage> {
                  }
               ),
               SizedBox(height: 20,),
-               if(!_forLogin)TextFormField(
+               TextFormField(
                 controller: _textControllerPassword,
                 obscureText: _isObscure,
                 decoration:  InputDecoration(
@@ -93,7 +93,7 @@ class _LoginPageState extends State<LoginPage> {
                  },
                  
               ),SizedBox(height: 20,),
-               TextFormField(
+               if(!_forLogin) TextFormField(
                 controller: _textControllerPasswordConfirm,
                 obscureText: _isObscure,
                 decoration:  InputDecoration(
