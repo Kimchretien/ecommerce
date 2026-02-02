@@ -6,6 +6,7 @@ import 'package:ecommerce/services/firebase/auth.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:ecommerce/widget/category_item.dart';
+import 'package:flutter/services.dart';
 import 'vetements_page.dart';
 import 'chaussures_page.dart';
 import 'accessoires_page.dart';
@@ -26,6 +27,9 @@ class _MyHomePageState extends State<MyHomePage> {
 
   final CollectionReference _collection= FirebaseFirestore.instance.collection('products');
   final CollectionReference _nouveaute=FirebaseFirestore.instance.collection('nouveaute');
+  final TextEditingController _namecontroller=TextEditingController();
+  final TextEditingController _pricecontroller=TextEditingController();
+  Map<String, bool> _isEditingMap = {};
 
   @override
   Widget build(BuildContext context) {
@@ -241,6 +245,8 @@ class _MyHomePageState extends State<MyHomePage> {
                                       "${data['price']} FBU • ⭐ ${data['rating']}",
                                       textAlign: TextAlign.center,
                                     ),
+                                  
+                                    
                                     Spacer(),//pour pousser le bouton vers le bas
                                     //SizedBox(height: 50,),
                                     ElevatedButton(
@@ -272,6 +278,9 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
 
               const SizedBox(height: 12),
+              
+                                        
+                                         
 
      StreamBuilder<QuerySnapshot>(
         stream: _nouveaute.snapshots(),
@@ -299,6 +308,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           ),
                           itemBuilder: (context, index) {
                             final data = collection[index];
+                            
 
                             return Card(
                               elevation: 2,
@@ -323,6 +333,29 @@ class _MyHomePageState extends State<MyHomePage> {
                                       "${data['price']} FBU • ⭐ ${data['badge']}",
                                       textAlign: TextAlign.center,
                                     ),
+                                     Row(
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          children: [
+                                            IconButton(
+                                              icon: const Icon(Icons.edit, color: Colors.orange),
+                                              onPressed: () {
+                                                setState(() {
+                                                  _isEditing=true;
+                                                });
+                                                // Ici tu peux ouvrir le formulaire de modification
+                                                
+                                              },
+                                            ),
+                                            IconButton (
+                                              icon: const Icon(Icons.delete, color: Colors.red),
+                                              onPressed: () async{
+                                                // Ici tu peux supprimer le produit
+                                                await _nouveaute.doc(data.id).delete();
+                                              },
+                                            ),
+                                          ],
+                                        ),
+
                                     Spacer(),//pour pousser le bouton vers le bas
                                     //SizedBox(height: 50,),
                                     ElevatedButton(
@@ -333,6 +366,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                 ),
                               ),
                             );
+  
                           },
                         );
         }
@@ -373,3 +407,6 @@ class AllProductsPage extends StatelessWidget {
     );
   }
 }
+
+
+
