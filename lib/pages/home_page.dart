@@ -399,7 +399,7 @@ List<Product> panier = [];
                             crossAxisCount: 2, // nombre de colonnes
                             crossAxisSpacing: 10,
                             mainAxisSpacing: 10,
-                            childAspectRatio: 3 / 2, // largeur / hauteur des cartes
+                            childAspectRatio: 3 / 3.5, // environ 0.85 → Card plus haute // largeur / hauteur des cartes
                           ),
                           itemBuilder: (context, index) {
                             final data = collection[index];
@@ -414,6 +414,7 @@ List<Product> panier = [];
                           padding: const EdgeInsets.all(10),
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
+                            mainAxisSize: MainAxisSize.min,
                             children: [
                               Text(
                                 data['name'],
@@ -442,7 +443,25 @@ List<Product> panier = [];
                                   ),
                                 ],
                               ),
-                              ElevatedButton(onPressed: (){}, child: Text("Ajouter au panier"))
+                              ElevatedButton(
+                                        onPressed: () {
+                                          // Crée un produit à partir des données
+                                          Product p = Product(
+                                            id: data.id,
+                                            name: data['name'],
+                                            price: data['price'],
+                                          );
+
+                                          setState(() {
+                                            panier.add(p); // ajoute le produit à la liste du panier
+                                          });
+
+                                          ScaffoldMessenger.of(context).showSnackBar(
+                                            SnackBar(content: Text("${p.name} ajouté au panier ✅")),
+                                          );
+                                        },
+                                        child: const Text("Ajouter au panier"),
+                                      )
                             ],
                           ),
                         ),
