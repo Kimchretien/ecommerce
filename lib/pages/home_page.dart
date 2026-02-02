@@ -25,6 +25,7 @@ class _MyHomePageState extends State<MyHomePage> {
   final User? user = Auth().currentUser;
 
   final CollectionReference _collection= FirebaseFirestore.instance.collection('products');
+  final CollectionReference _nouveaute=FirebaseFirestore.instance.collection('nouveaute');
 
   @override
   Widget build(BuildContext context) {
@@ -184,90 +185,81 @@ class _MyHomePageState extends State<MyHomePage> {
 
               const SizedBox(height: 12),
                 StreamBuilder<QuerySnapshot>(
-  stream: _collection.snapshots(),
-  builder: (context, snapshot) {
-    // 1️⃣ Chargement
-    if (snapshot.connectionState == ConnectionState.waiting) {
-      return const Center(child: CircularProgressIndicator());
-    }
+                      stream: _collection.snapshots(),
+                       builder: (context, snapshot) {
+                        // 1️⃣ Chargement
+                        if (snapshot.connectionState == ConnectionState.waiting) {
+                          return const Center(child: CircularProgressIndicator());
+                        }
 
-    // 2️⃣ Erreur
-    if (snapshot.hasError) {
-      return const Center(child: Text("Erreur Firebase"));
-    }
+                        // 2️⃣ Erreur
+                        if (snapshot.hasError) {
+                          return const Center(child: Text("Erreur Firebase"));
+                        }
 
-    // 3️⃣ Aucune donnée
-    if (snapshot.data == null || snapshot.data!.docs.isEmpty) {
-      return const Center(child: Text("Aucun produit"));
-    }
+                        // 3️⃣ Aucune donnée
+                        if (snapshot.data == null || snapshot.data!.docs.isEmpty) {
+                          return const Center(child: Text("Aucun produit"));
+                        }
 
-    // 4️⃣ Données OK ✅
-    final products = snapshot.data!.docs;
+                        // 4️⃣ Données OK ✅
+                        final products = snapshot.data!.docs;
 
-    return GridView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      itemCount: products.length,
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2, // nombre de colonnes
-        crossAxisSpacing: 10,
-        mainAxisSpacing: 10,
-        childAspectRatio: 3 / 2, // largeur / hauteur des cartes
-      ),
-      itemBuilder: (context, index) {
-        final data = products[index];
+                        return GridView.builder(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount: products.length,
+                          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2, // nombre de colonnes
+                            crossAxisSpacing: 10,
+                            mainAxisSpacing: 10,
+                            childAspectRatio: 3 / 2, // largeur / hauteur des cartes
+                          ),
+                          itemBuilder: (context, index) {
+                            final data = products[index];
 
-        return Card(
-          elevation: 2,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  data['name'],
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  "${data['price']} FBU • ⭐ ${data['rating']}",
-                  textAlign: TextAlign.center,
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  },
-),
+                            return Card(
+                              elevation: 2,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      data['name'],
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16,
+                                      ),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                    const SizedBox(height: 8),
+                                    Text(
+                                      "${data['price']} FBU • ⭐ ${data['rating']}",
+                                      textAlign: TextAlign.center,
+                                    ),
+                                    Spacer(),//pour pousser le bouton vers le bas
+                                    //SizedBox(height: 50,),
+                                    ElevatedButton(
+                                      onPressed: (){},
+                                      child: Text("Ajouter au panier"),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            );
+                          },
+                        );
+                      },
+                    ),
 
 
 
 
-              /// GRIDVIEW DES PRODUITS POPULAIRES (2 colonnes)
-              // GridView.builder(
-              //   shrinkWrap: true,
-              //   physics: const NeverScrollableScrollPhysics(),
-              //   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              //     crossAxisCount: 2,
-              //     crossAxisSpacing: 12,
-              //     mainAxisSpacing: 12,
-              //     childAspectRatio: 0.65,
-              //   ),
-              //   itemCount: ProductsData.popularProducts.length,
-              //   itemBuilder: (context, index) {
-              //     return ProductsData.popularProducts[index];
-              //   },
-              // ),
-
+             
               const SizedBox(height: 30),
 
               /// SECTION NOUVEAUTÉS
@@ -281,24 +273,71 @@ class _MyHomePageState extends State<MyHomePage> {
 
               const SizedBox(height: 12),
 
-              
+     StreamBuilder<QuerySnapshot>(
+        stream: _nouveaute.snapshots(),
+        builder: (context,snapshot){
+          if(snapshot.hasError){
+            return const Center(child: Text("Erreur avec la base de donnee"),);
+          }if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+            return const Center(child: Text("Aucun produit disponible"));
+          }
 
-              /// GRIDVIEW DES NOUVEAUTÉS (2 colonnes)
-              // GridView.builder(
-              //   shrinkWrap: true,
-              //   physics: const NeverScrollableScrollPhysics(),
-              //   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              //     crossAxisCount: 2,
-              //     crossAxisSpacing: 12,
-              //     mainAxisSpacing: 12,
-              //     childAspectRatio: 0.65,
-              //   ),
-              //   itemCount: ProductsData.newProducts.length,
-              //   itemBuilder: (context, index) {
-              //     return ProductsData.newProducts[index];
-              //   },
-              // ),
+           if(snapshot.connectionState == ConnectionState.waiting){
+            return Center(child: CircularProgressIndicator(),);
+          }
 
+           final collection = snapshot.data!.docs;
+          return GridView.builder(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount: collection.length,
+                          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2, // nombre de colonnes
+                            crossAxisSpacing: 10,
+                            mainAxisSpacing: 10,
+                            childAspectRatio: 3 / 2, // largeur / hauteur des cartes
+                          ),
+                          itemBuilder: (context, index) {
+                            final data = collection[index];
+
+                            return Card(
+                              elevation: 2,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      data['name'],
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16,
+                                      ),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                    const SizedBox(height: 8),
+                                    Text(
+                                      "${data['price']} FBU • ⭐ ${data['badge']}",
+                                      textAlign: TextAlign.center,
+                                    ),
+                                    Spacer(),//pour pousser le bouton vers le bas
+                                    //SizedBox(height: 50,),
+                                    ElevatedButton(
+                                      onPressed: (){},
+                                      child: Text("Ajouter au panier"),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            );
+                          },
+                        );
+        }
+        ),
+             
               const SizedBox(height: 20),
             ],
           ),
