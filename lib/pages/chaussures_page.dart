@@ -1,3 +1,4 @@
+import 'package:ecommerce/widget/chaussure_item.dart';
 import 'package:flutter/material.dart';
 
 class ChaussuresPage extends StatelessWidget {
@@ -9,12 +10,16 @@ class ChaussuresPage extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Chaussures'),
       ),
-      body: const Center(
-        child: Text(
-          'Liste des chaussures',
-          style: TextStyle(fontSize: 18),
-        ),
-      ),
+      body:SingleChildScrollView(
+        // child: Column(
+        //   children: [
+        //    // ChaussureItem(name: 'Nike', icon: Icon(Icons.), 
+        //     //onTap: (context,MaterialPageRoute(builder(_)=>)){}
+        //     )
+        //   ],
+        // ), 
+
+      )
     );
   }
 }

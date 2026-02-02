@@ -3,13 +3,14 @@ import 'package:ecommerce/pages/electroniques_pages.dart';
 import 'package:ecommerce/pages/gaming_pages.dart';
 import 'package:ecommerce/services/firebase/auth.dart';
 //import 'package:ecommerce/widget/popular_item.dart';
-import 'package:ecommerce/data/products_data.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:ecommerce/widget/category_item.dart';
 import 'vetements_page.dart';
 import 'chaussures_page.dart';
 import 'accessoires_page.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
@@ -22,6 +23,8 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   final User? user = Auth().currentUser;
+
+  final CollectionReference _collection= FirebaseFirestore.instance.collection('products');
 
   @override
   Widget build(BuildContext context) {
@@ -180,22 +183,90 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
 
               const SizedBox(height: 12),
+                StreamBuilder<QuerySnapshot>(
+  stream: _collection.snapshots(),
+  builder: (context, snapshot) {
+    // 1️⃣ Chargement
+    if (snapshot.connectionState == ConnectionState.waiting) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    // 2️⃣ Erreur
+    if (snapshot.hasError) {
+      return const Center(child: Text("Erreur Firebase"));
+    }
+
+    // 3️⃣ Aucune donnée
+    if (snapshot.data == null || snapshot.data!.docs.isEmpty) {
+      return const Center(child: Text("Aucun produit"));
+    }
+
+    // 4️⃣ Données OK ✅
+    final products = snapshot.data!.docs;
+
+    return GridView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: products.length,
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2, // nombre de colonnes
+        crossAxisSpacing: 10,
+        mainAxisSpacing: 10,
+        childAspectRatio: 3 / 2, // largeur / hauteur des cartes
+      ),
+      itemBuilder: (context, index) {
+        final data = products[index];
+
+        return Card(
+          elevation: 2,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  data['name'],
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  "${data['price']} FBU • ⭐ ${data['rating']}",
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  },
+),
+
+
+
 
               /// GRIDVIEW DES PRODUITS POPULAIRES (2 colonnes)
-              GridView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 12,
-                  mainAxisSpacing: 12,
-                  childAspectRatio: 0.65,
-                ),
-                itemCount: ProductsData.popularProducts.length,
-                itemBuilder: (context, index) {
-                  return ProductsData.popularProducts[index];
-                },
-              ),
+              // GridView.builder(
+              //   shrinkWrap: true,
+              //   physics: const NeverScrollableScrollPhysics(),
+              //   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              //     crossAxisCount: 2,
+              //     crossAxisSpacing: 12,
+              //     mainAxisSpacing: 12,
+              //     childAspectRatio: 0.65,
+              //   ),
+              //   itemCount: ProductsData.popularProducts.length,
+              //   itemBuilder: (context, index) {
+              //     return ProductsData.popularProducts[index];
+              //   },
+              // ),
 
               const SizedBox(height: 30),
 
@@ -210,21 +281,23 @@ class _MyHomePageState extends State<MyHomePage> {
 
               const SizedBox(height: 12),
 
+              
+
               /// GRIDVIEW DES NOUVEAUTÉS (2 colonnes)
-              GridView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 12,
-                  mainAxisSpacing: 12,
-                  childAspectRatio: 0.65,
-                ),
-                itemCount: ProductsData.newProducts.length,
-                itemBuilder: (context, index) {
-                  return ProductsData.newProducts[index];
-                },
-              ),
+              // GridView.builder(
+              //   shrinkWrap: true,
+              //   physics: const NeverScrollableScrollPhysics(),
+              //   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              //     crossAxisCount: 2,
+              //     crossAxisSpacing: 12,
+              //     mainAxisSpacing: 12,
+              //     childAspectRatio: 0.65,
+              //   ),
+              //   itemCount: ProductsData.newProducts.length,
+              //   itemBuilder: (context, index) {
+              //     return ProductsData.newProducts[index];
+              //   },
+              // ),
 
               const SizedBox(height: 20),
             ],
@@ -245,19 +318,19 @@ class AllProductsPage extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Tous les produits'),
       ),
-      body: GridView.builder(
-        padding: const EdgeInsets.all(16),
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          crossAxisSpacing: 12,
-          mainAxisSpacing: 12,
-          childAspectRatio: 0.65,
-        ),
-        itemCount: ProductsData.allProducts.length,
-        itemBuilder: (context, index) {
-          return ProductsData.allProducts[index];
-        },
-      ),
+      // body: GridView.builder(
+      //   padding: const EdgeInsets.all(16),
+      //   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+      //     crossAxisCount: 2,
+      //     crossAxisSpacing: 12,
+      //     mainAxisSpacing: 12,
+      //     childAspectRatio: 0.65,
+      //   ),
+      //   itemCount: ProductsData.allProducts.length,
+      //   itemBuilder: (context, index) {
+      //     return ProductsData.allProducts[index];
+      //   },
+      // ),
     );
   }
 }
