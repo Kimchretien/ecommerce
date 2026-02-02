@@ -1,6 +1,8 @@
+import 'package:ecommerce/data/products.dart';
 import 'package:ecommerce/pages/book_page.dart';
 import 'package:ecommerce/pages/electroniques_pages.dart';
 import 'package:ecommerce/pages/gaming_pages.dart';
+import 'package:ecommerce/pages/panier_page.dart';
 import 'package:ecommerce/services/firebase/auth.dart';
 //import 'package:ecommerce/widget/popular_item.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -23,13 +25,82 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+
+
+List<Product> panier = [];
+
   final User? user = Auth().currentUser;
 
   final CollectionReference _collection= FirebaseFirestore.instance.collection('products');
   final CollectionReference _nouveaute=FirebaseFirestore.instance.collection('nouveaute');
   final TextEditingController _namecontroller=TextEditingController();
   final TextEditingController _pricecontroller=TextEditingController();
-  Map<String, bool> _isEditingMap = {};
+
+  void _showEditDialog(QueryDocumentSnapshot data) {
+  _namecontroller.text = data['name'];
+  _pricecontroller.text = data['price'].toString();
+
+  showDialog(
+    context: context,
+    barrierDismissible: false,
+    builder: (context) {
+      return AlertDialog(
+        title: const Text("Modifier le produit"),
+        content: Form(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextFormField(
+                controller: _namecontroller,
+                decoration: const InputDecoration(
+                  labelText: "Nom du produit",
+                ),
+              ),
+              const SizedBox(height: 10),
+              TextFormField(
+                controller: _pricecontroller,
+                keyboardType: TextInputType.number,
+                inputFormatters: [
+                  FilteringTextInputFormatter.digitsOnly
+                ],
+                decoration: const InputDecoration(
+                  labelText: "Prix",
+                ),
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            child: const Text("Annuler"),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              await _nouveaute.doc(data.id).update({
+                'name': _namecontroller.text,
+                'price': int.parse(_pricecontroller.text),
+              });
+                if (!mounted) return;
+
+
+              Navigator.pop(context);
+
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text("Produit modifié ✔")),
+              );
+            },
+            child: const Text("Enregistrer"),
+          ),
+        ],
+      );
+    },
+  );
+}
+
+ // final Map<String, bool> _isEditingMap = {};
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +109,14 @@ class _MyHomePageState extends State<MyHomePage> {
         title: const Text('ShopApp'),
         actions: [
           IconButton(
-            onPressed: (){}, 
+            onPressed: () {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => PanierPage(panier: panier),
+      ),
+    );
+  }, 
             icon: Icon(Icons.shopping_cart)
             ),
           IconButton(
@@ -250,9 +328,25 @@ class _MyHomePageState extends State<MyHomePage> {
                                     Spacer(),//pour pousser le bouton vers le bas
                                     //SizedBox(height: 50,),
                                     ElevatedButton(
-                                      onPressed: (){},
-                                      child: Text("Ajouter au panier"),
-                                    )
+                                        onPressed: () {
+                                          // Crée un produit à partir des données
+                                          Product p = Product(
+                                            id: data.id,
+                                            name: data['name'],
+                                            price: data['price'],
+                                          );
+
+                                          setState(() {
+                                            panier.add(p); // ajoute le produit à la liste du panier
+                                          });
+
+                                          ScaffoldMessenger.of(context).showSnackBar(
+                                            SnackBar(content: Text("${p.name} ajouté au panier ✅")),
+                                          );
+                                        },
+                                        child: const Text("Ajouter au panier"),
+                                      )
+
                                   ],
                                 ),
                               ),
@@ -297,6 +391,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
            final collection = snapshot.data!.docs;
           return GridView.builder(
+            
                           shrinkWrap: true,
                           physics: const NeverScrollableScrollPhysics(),
                           itemCount: collection.length,
@@ -309,63 +404,50 @@ class _MyHomePageState extends State<MyHomePage> {
                           itemBuilder: (context, index) {
                             final data = collection[index];
                             
-
-                            return Card(
-                              elevation: 2,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8),
+                        
+                      return Card(
+                        elevation: 3,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(10),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                data['name'],
+                                style: const TextStyle(fontWeight: FontWeight.bold),
+                                textAlign: TextAlign.center,
                               ),
-                              child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Text(
-                                      data['name'],
-                                      style: const TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 16,
-                                      ),
-                                      textAlign: TextAlign.center,
-                                    ),
-                                    const SizedBox(height: 8),
-                                    Text(
-                                      "${data['price']} FBU • ⭐ ${data['badge']}",
-                                      textAlign: TextAlign.center,
-                                    ),
-                                     Row(
-                                          mainAxisAlignment: MainAxisAlignment.center,
-                                          children: [
-                                            IconButton(
-                                              icon: const Icon(Icons.edit, color: Colors.orange),
-                                              onPressed: () {
-                                                setState(() {
-                                                  _isEditing=true;
-                                                });
-                                                // Ici tu peux ouvrir le formulaire de modification
-                                                
-                                              },
-                                            ),
-                                            IconButton (
-                                              icon: const Icon(Icons.delete, color: Colors.red),
-                                              onPressed: () async{
-                                                // Ici tu peux supprimer le produit
-                                                await _nouveaute.doc(data.id).delete();
-                                              },
-                                            ),
-                                          ],
-                                        ),
+                              const SizedBox(height: 6),
+                              Text("${data['price']} FBU"),
 
-                                    Spacer(),//pour pousser le bouton vers le bas
-                                    //SizedBox(height: 50,),
-                                    ElevatedButton(
-                                      onPressed: (){},
-                                      child: Text("Ajouter au panier"),
-                                    )
-                                  ],
-                                ),
+                              const Spacer(),
+
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  IconButton(
+                                    icon: const Icon(Icons.edit, color: Colors.blue),
+                                    onPressed: () {
+                                      _showEditDialog(data);
+                                    },
+                                  ),
+                                  IconButton(
+                                    icon: const Icon(Icons.delete, color: Colors.red),
+                                    onPressed: () async {
+                                      await _nouveaute.doc(data.id).delete();
+                                    },
+                                  ),
+                                ],
                               ),
-                            );
+                              ElevatedButton(onPressed: (){}, child: Text("Ajouter au panier"))
+                            ],
+                          ),
+                        ),
+                      );
+
   
                           },
                         );
