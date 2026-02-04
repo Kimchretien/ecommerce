@@ -6,19 +6,125 @@ import 'package:flutter/material.dart';
 class ChaussuresPage extends StatelessWidget {
    ChaussuresPage({super.key});
 
-  final CollectionReference _collection= FirebaseFirestore.instance.collection('chaussure');
+
+   
+
+  final CollectionReference _chaussure= FirebaseFirestore.instance.collection('chaussure');
+  final TextEditingController _namecontroller =TextEditingController();
+
+
+
+
+  void _showEditDialog(QueryDocumentSnapshot data, BuildContext context) {
+  _namecontroller.text = data['name'];
+
+  showDialog(
+    context: context,
+    barrierDismissible: false,
+    builder: (context) {
+      return AlertDialog(
+        title: const Text("Modifier le produit"),
+        content: Form(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextFormField(
+                controller: _namecontroller,
+                decoration: const InputDecoration(
+                  labelText: "Nom du produit",
+                ),
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            child: const Text("Annuler"),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              await _chaussure.doc(data.id).update({
+                'name': _namecontroller.text,
+              });;
+
+
+              Navigator.pop(context);
+
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text("Produit modifié ✔")),
+              );
+            },
+            child: const Text("Enregistrer"),
+          ),
+        ],
+      );
+    },
+  );
+}
+
+void _showAddDialog(BuildContext context,) {
+
+
+  showDialog(
+    context: context,
+    barrierDismissible: false,
+    builder: (context) {
+      return AlertDialog(
+        title: const Text("Modifier le produit"),
+        content: Form(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextFormField(
+                controller: _namecontroller,
+                decoration: const InputDecoration(
+                  labelText: "Nom du produit",
+                ),
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            child: const Text("Annuler"),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              await _chaussure.add({
+                'name': _namecontroller.text,
+              });
+
+
+              Navigator.pop(context);
+
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text("Produit modifié ✔")),
+              );
+            },
+            child: const Text("Enregistrer"),
+          ),
+        ],
+      );
+    },
+  );
+}
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Chaussures'),
       ),
       body:SingleChildScrollView(
         child: Column(
           children: [
           StreamBuilder<QuerySnapshot>(
-                      stream: _collection.snapshots(),
+                      stream: _chaussure.snapshots(),
                        builder: (context, snapshot) {
                         // 1️⃣ Chargement
                         if (snapshot.connectionState == ConnectionState.waiting) {
@@ -49,7 +155,7 @@ class ChaussuresPage extends StatelessWidget {
                             childAspectRatio: 3 / 2, // largeur / hauteur des cartes
                           ),
                           itemBuilder: (context, index) {
-                            final data = products[index];
+                            final  data = products[index];
 
                             return Card(
                               elevation: 2,
@@ -74,6 +180,26 @@ class ChaussuresPage extends StatelessWidget {
                                         ),
                                         textAlign: TextAlign.center,
                                       ),
+                                       const Spacer(),
+
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  IconButton(
+                                    icon: const Icon(Icons.edit, color: Colors.blue),
+                                    onPressed: () {
+                                      //_showEditDialog(data);
+                                      _showEditDialog(data, context);
+                                    },
+                                  ),
+                                  IconButton(
+                                    icon: const Icon(Icons.delete, color: Colors.red),
+                                    onPressed: () async {
+                                      await _chaussure.doc(data.id).delete();
+                                    },
+                                  ),
+                                ],
+                              ),
                                     ],
                                   ),
                                 ),
@@ -88,7 +214,12 @@ class ChaussuresPage extends StatelessWidget {
           ],
         ), 
 
-      )
+      ),
+      floatingActionButton: FloatingActionButton(onPressed: (){
+        _showAddDialog(context);
+      },
+      child: Icon(Icons.add),
+      ),
     );
   }
 }
