@@ -1,48 +1,67 @@
-import 'package:flutter/material.dart';
 import 'package:ecommerce/data/products.dart';
+import 'package:ecommerce/pages/CartService_page.dart';
+import 'package:flutter/material.dart';
 
-class PanierPage extends StatelessWidget {
-  final List<Product> panier;
 
-  const PanierPage({super.key, required this.panier});
+class CartPage extends StatefulWidget {
+  const CartPage({super.key});
+
+  @override
+  State<CartPage> createState() => _CartPageState();
+}
+
+class _CartPageState extends State<CartPage> {
+  List<Product> cart = [];
+
+  @override
+  void initState() {
+    super.initState();
+    loadCartItems();
+  }
+
+  void loadCartItems() async {
+    List<Product> loadedCart = await CartService.loadCart();
+    setState(() {
+      cart = loadedCart;
+    });
+  }
+
+  void clearCart() async {
+    await CartService.clearCart();
+    setState(() {
+      cart = [];
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    int total = panier.fold(0, (sum, item) => sum + item.price);
-
     return Scaffold(
-      appBar: AppBar(title: const Text("Panier")),
-      body: panier.isEmpty
-          ? const Center(child: Text("Votre panier est vide"))
+      appBar: AppBar(title: Text("Mon Panier")),
+      body: cart.isEmpty
+          ? Center(child: Text("Votre panier est vide"))
           : ListView.builder(
-              itemCount: panier.length,
+              itemCount: cart.length,
               itemBuilder: (context, index) {
-                final item = panier[index];
+                Product p = cart[index];
                 return ListTile(
-                  title: Text(item.name),
-                  trailing: Text("${item.price} FBU"),
+                  title: Text(p.name),
+                  subtitle: Text("${p.price} FBU"),
                 );
               },
             ),
-      bottomNavigationBar: Container(
-        padding: const EdgeInsets.all(16),
-        color: Colors.blueGrey[50],
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text("Total: $total FBU", style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-            ElevatedButton(
-              onPressed: () {
-                // Tu peux ajouter la logique de paiement ici
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text("Paiement effectué ✔")),
-                );
-              },
-              child: const Text("Payer"),
-            )
-          ],
-        ),
-      ),
+      bottomNavigationBar: cart.isEmpty
+          ? null
+          : Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: ElevatedButton(
+                onPressed: () {
+                  // Ici tu déclenches le paiement
+                  // Après paiement :
+                  clearCart();
+                },
+                child: Text("Payer (${cart.length} produits)"),
+              ),
+            ),
     );
   }
 }

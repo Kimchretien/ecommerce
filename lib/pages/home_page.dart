@@ -1,10 +1,10 @@
 import 'package:ecommerce/data/products.dart';
+import 'package:ecommerce/pages/CartService_page.dart';
 import 'package:ecommerce/pages/book_page.dart';
 import 'package:ecommerce/pages/electroniques_pages.dart';
 import 'package:ecommerce/pages/gaming_pages.dart';
 import 'package:ecommerce/pages/panier_page.dart';
 import 'package:ecommerce/services/firebase/auth.dart';
-//import 'package:ecommerce/widget/popular_item.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:ecommerce/widget/category_item.dart';
@@ -35,6 +35,20 @@ List<Product> panier = [];
   final CollectionReference _nouveaute=FirebaseFirestore.instance.collection('nouveaute');
   final TextEditingController _namecontroller=TextEditingController();
   final TextEditingController _pricecontroller=TextEditingController();
+
+void addToCart(Product product) async {
+  // Charger le panier actuel
+  List<Product> currentCart = await CartService.loadCart();
+
+  // Ajouter le nouveau produit
+  currentCart.add(product);
+
+  // Sauvegarder à nouveau le panier
+  await CartService.saveCart(currentCart);
+
+  // print("Produit ajouté au panier : ${product.name}");
+}
+
 
   void _showEditDialog(QueryDocumentSnapshot data) {
   _namecontroller.text = data['name'];
@@ -113,7 +127,7 @@ List<Product> panier = [];
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => PanierPage(panier: panier),
+        builder: (context) => CartPage(),
       ),
     );
   }, 
@@ -328,24 +342,20 @@ List<Product> panier = [];
                                     Spacer(),//pour pousser le bouton vers le bas
                                     //SizedBox(height: 50,),
                                     ElevatedButton(
-                                        onPressed: () {
-                                          // Crée un produit à partir des données
-                                          Product p = Product(
-                                            id: data.id,
-                                            name: data['name'],
-                                            price: data['price'],
-                                          );
+                                          onPressed: () {
+                                            Product p = Product(
+                                              id: data.id,
+                                              name: data['name'],
+                                              price: data['price'],
+                                            );
 
-                                          setState(() {
-                                            panier.add(p); // ajoute le produit à la liste du panier
-                                          });
-
-                                          ScaffoldMessenger.of(context).showSnackBar(
-                                            SnackBar(content: Text("${p.name} ajouté au panier ✅")),
-                                          );
-                                        },
-                                        child: const Text("Ajouter au panier"),
-                                      )
+                                            addToCart(p);
+                                             ScaffoldMessenger.of(context).showSnackBar(
+                                             SnackBar(content: Text("${p.name} ajouté au panier ✅")),
+                                           );
+                                          },
+                                          child: Text("Ajouter au panier"),
+                                        )
 
                                   ],
                                 ),
@@ -444,26 +454,23 @@ List<Product> panier = [];
                                 ],
                               ),
                               ElevatedButton(
-                                        onPressed: () {
-                                          // Crée un produit à partir des données
-                                          Product p = Product(
-                                            id: data.id,
-                                            name: data['name'],
-                                            price: data['price'],
-                                          );
+                                          onPressed: () {
+                                            Product p = Product(
+                                              id: data.id,
+                                              name: data['name'],
+                                              price: data['price'],
+                                            );
 
-                                          setState(() {
-                                            panier.add(p); // ajoute le produit à la liste du panier
-                                          });
+                                            addToCart(p);
+                                             ScaffoldMessenger.of(context).showSnackBar(
+                                             SnackBar(content: Text("${p.name} ajouté au panier ✅")),
+                                           );
+                                          },
+                                          child: Text("Ajouter au panier"),
+                                        )
 
-                                          ScaffoldMessenger.of(context).showSnackBar(
-                                            SnackBar(content: Text("${p.name} ajouté au panier ✅")),
-                                          );
-                                        },
-                                        child: const Text("Ajouter au panier"),
-                                      )
                             ],
-                          ),
+                          ),//
                         ),
                       );
 
