@@ -16,7 +16,8 @@ class ChaussureItem extends StatelessWidget{
       onTap: onTap,
       child: Container(
         width: 100,
-        margin: const EdgeInsets.only(right: 12),
+        height: 150,
+        margin: const EdgeInsets.all(20),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(16),
