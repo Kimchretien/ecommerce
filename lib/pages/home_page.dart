@@ -1,6 +1,6 @@
 import 'package:ecommerce/data/products.dart';
 import 'package:ecommerce/pages/CartService_page.dart';
-import 'package:ecommerce/pages/book_page.dart';
+import 'package:ecommerce/pages/categorie/book_page.dart';
 import 'package:ecommerce/pages/electroniques_pages.dart';
 import 'package:ecommerce/pages/gaming_pages.dart';
 import 'package:ecommerce/pages/panier_page.dart';
@@ -9,7 +9,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:ecommerce/widget/category_item.dart';
 import 'package:flutter/services.dart';
-import 'vetements_page.dart';
+import 'categorie/vetements_page.dart';
 import 'chaussures_page.dart';
 import 'accessoires_page.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
