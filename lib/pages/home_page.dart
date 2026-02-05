@@ -50,7 +50,7 @@ void addToCart(Product product) async {
 }
 
 
-  void _showEditDialog(QueryDocumentSnapshot data) {
+  void _showEditDialog(BuildContext context, QueryDocumentSnapshot data) {
   _namecontroller.text = data['name'];
   _pricecontroller.text = data['price'].toString();
 
@@ -401,82 +401,129 @@ void addToCart(Product product) async {
 
            final collection = snapshot.data!.docs;
           return GridView.builder(
-            
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          itemCount: collection.length,
-                          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 2, // nombre de colonnes
-                            crossAxisSpacing: 10,
-                            mainAxisSpacing: 10,
-                            childAspectRatio: 3 / 3.5, // environ 0.85 → Card plus haute // largeur / hauteur des cartes
-                          ),
-                          itemBuilder: (context, index) {
-                            final data = collection[index];
-                            
-                        
-                      return Card(
-                        elevation: 3,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
+  shrinkWrap: true,
+  physics: const NeverScrollableScrollPhysics(),
+  itemCount: collection.length,
+  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+    crossAxisCount: 2,
+    crossAxisSpacing: 10,
+    mainAxisSpacing: 10,
+    childAspectRatio: 3 / 3.5, // cartes un peu plus hautes
+  ),
+  itemBuilder: (context, index) {
+    final data = collection[index];
+
+    // Récupération sécurisée de l'image
+    final Map<String, dynamic>? dataMap = data.data() as Map<String, dynamic>?;
+    final imageUrl = (dataMap != null && dataMap.containsKey('images'))
+        ? dataMap['images']
+        : 'https://via.placeholder.com/300';
+
+    return Card(
+      elevation: 3,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(10),
+        onTap: () {
+          // Action clic sur la carte si nécessaire
+        },
+        child: Stack(
+          children: [
+            // 1️⃣ Image en background
+            ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: Image.network(
+                imageUrl,
+                fit: BoxFit.cover,
+                width: double.infinity,
+                height: double.infinity,
+                errorBuilder: (context, error, stackTrace) =>
+                    const Icon(Icons.error, size: 40, color: Colors.red),
+              ),
+            ),
+
+            // 2️⃣ Contenu par-dessus l'image
+            Positioned(
+              bottom: 8,
+              left: 8,
+              right: 8,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    data['name'],
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                      shadows: [
+                        Shadow(
+                          blurRadius: 5,
+                          color: Colors.black,
+                          offset: Offset(1, 1),
                         ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(10),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text(
-                                data['name'],
-                                style: const TextStyle(fontWeight: FontWeight.bold),
-                                textAlign: TextAlign.center,
-                              ),
-                              const SizedBox(height: 6),
-                              Text("${data['price']} FBU"),
-
-                              const Spacer(),
-
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  IconButton(
-                                    icon: const Icon(Icons.edit, color: Colors.blue),
-                                    onPressed: () {
-                                      _showEditDialog(data);
-                                    },
-                                  ),
-                                  IconButton(
-                                    icon: const Icon(Icons.delete, color: Colors.red),
-                                    onPressed: () async {
-                                      await _nouveaute.doc(data.id).delete();
-                                    },
-                                  ),
-                                ],
-                              ),
-                              ElevatedButton(
-                                          onPressed: () {
-                                            Product p = Product(
-                                              id: data.id,
-                                              name: data['name'],
-                                              price: data['price'],
-                                            );
-
-                                            addToCart(p);
-                                             ScaffoldMessenger.of(context).showSnackBar(
-                                             SnackBar(content: Text("${p.name} ajouté au panier ✅")),
-                                           );
-                                          },
-                                          child: Text("Ajouter au panier"),
-                                        )
-
-                            ],
-                          ),//
+                      ],
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    "${data['price']} FBU",
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 14,
+                      shadows: [
+                        Shadow(
+                          blurRadius: 5,
+                          color: Colors.black,
+                          offset: Offset(1, 1),
                         ),
+                      ],
+                    ),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.edit, color: Colors.white),
+                        onPressed: () => _showEditDialog(context, data),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.delete, color: Colors.red),
+                        onPressed: () async {
+                          await _nouveaute.doc(data.id).delete();
+                        },
+                      ),
+                    ],
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      Product p = Product(
+                        id: data.id,
+                        name: data['name'],
+                        price: data['price'],
                       );
+                      addToCart(p);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text("${p.name} ajouté au panier ✅")),
+                      );
+                    },
+                    child: const Text("Ajouter au panier"),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  },
+);
 
-  
-                          },
-                        );
         }
         ),
              
