@@ -183,7 +183,7 @@ void addToCart(Product product) async {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (_) => const VetementsPage(),
+                            builder: (_) =>  VetementsPage(),
                           ),
                         );
                       },
