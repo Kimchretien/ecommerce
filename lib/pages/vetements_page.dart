@@ -10,7 +10,7 @@ class VetementsPage extends StatelessWidget {
 
    
 
-  final CollectionReference _vetements= FirebaseFirestore.instance.collection('vetements');
+  final CollectionReference _vetements= FirebaseFirestore.instance.collection('Vetements');
   final TextEditingController _namecontroller =TextEditingController();
 
 

@@ -207,7 +207,7 @@ void addToCart(Product product) async {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (_) => const AccessoiresPage(),
+                            builder: (_) =>  AccessoiresPage(),
                           ),
                         );
                       },
@@ -219,7 +219,7 @@ void addToCart(Product product) async {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (_) => const ElectroniquesPage(),
+                            builder: (_) =>  ElectroniquesPages(),
                           ),
                         );
                       },
@@ -231,7 +231,7 @@ void addToCart(Product product) async {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (_) => const GamingPage(),
+                            builder: (_) =>  GamingPages(),
                           ),
                         );
                       },
