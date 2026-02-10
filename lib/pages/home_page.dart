@@ -237,13 +237,13 @@ void addToCart(Product product) async {
                       },
                     ),
                     CategoryItem(
-                      title: 'Books',
+                      title: 'Livres',
                       icon: Icons.book,
                       onTap: () {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (_) => const BookPage(),
+                            builder: (_) =>  BookPage(),
                           ),
                         );
                       },
