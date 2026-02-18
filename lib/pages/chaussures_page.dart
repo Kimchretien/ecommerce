@@ -1,7 +1,6 @@
 import 'package:ecommerce/pages/CategoryPage.dart';
 import 'package:flutter/material.dart';
 
-
 class ChaussuresPage extends StatelessWidget {
   const ChaussuresPage({super.key});
 
@@ -10,6 +9,7 @@ class ChaussuresPage extends StatelessWidget {
     return CategoryPage(
       title: "Chaussures",
       collectionName: "chaussure",
+
     );
   }
 }

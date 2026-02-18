@@ -10,6 +10,7 @@ class AccessoiresPage extends StatelessWidget {
     return CategoryPage(
       title: "Accessoires",
       collectionName: "accessoires",
+       
     );
   }
 }

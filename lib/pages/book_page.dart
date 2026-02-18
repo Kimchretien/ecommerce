@@ -10,6 +10,7 @@ class BookPage extends StatelessWidget {
     return CategoryPage(
       title: "Livres",
       collectionName: "books",
+     
     );
   }
 }

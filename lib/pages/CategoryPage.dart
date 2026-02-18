@@ -5,12 +5,15 @@ import 'package:flutter/material.dart';
 class CategoryPage extends StatelessWidget {
   final String title;
   final String collectionName;
+  //final Widget NavigationPushed;
 
-  CategoryPage({
-    super.key,
-    required this.title,
-    required this.collectionName,
-  });
+  
+CategoryPage({
+  super.key,
+  required this.title,
+  required this.collectionName,
+});
+
 
   final TextEditingController _nameController = TextEditingController();
 
@@ -133,6 +136,10 @@ class CategoryPage extends StatelessWidget {
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: InkWell(
+                   onTap: () {
+                        
+                        },
+
                     borderRadius: BorderRadius.circular(12),
                     child: Stack(
                       children: [

@@ -10,6 +10,7 @@ class GamingPages extends StatelessWidget {
     return CategoryPage(
       title: "Jeux Vidéo",
       collectionName: "gaming",
+
     );
   }
 }
