@@ -1,5 +1,4 @@
 import 'package:ecommerce/pages/CategoryPage.dart';
-import 'package:ecommerce/pages/chaussureDetailsPage.dart';
 import 'package:flutter/material.dart';
 
 
@@ -11,8 +10,7 @@ class VetementsPage extends StatelessWidget {
     return CategoryPage(
       title: "Vêtements",
       collectionName: "Vetements",
-       navigationPushed: (data) =>
-          ChaussureDetailsPage(product: data),
+       
     );
   }
 }

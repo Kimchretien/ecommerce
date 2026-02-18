@@ -8,11 +8,15 @@ class CategoryPage extends StatelessWidget {
   //final Widget NavigationPushed;
 
   
+final String? brandFilter;
+
 CategoryPage({
   super.key,
   required this.title,
   required this.collectionName,
+  this.brandFilter,
 });
+
 
 
   final TextEditingController _nameController = TextEditingController();
@@ -96,15 +100,16 @@ CategoryPage({
             icon: Icon(Icons.shopping_cart_checkout)
             ),
           SizedBox(width: 10),
-          Icon(Icons.shopping_cart_outlined),
-          SizedBox(width: 10),
         ],
       ),
 
       body: Padding(
         padding: const EdgeInsets.all(12),
         child: StreamBuilder<QuerySnapshot>(
-          stream: collection.snapshots(),
+          stream: brandFilter == null
+         ? collection.snapshots()
+         : collection.where("brand", isEqualTo: brandFilter).snapshots(),
+
           builder: (context, snapshot) {
             if (!snapshot.hasData) {
               return const Center(child: CircularProgressIndicator());
