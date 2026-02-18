@@ -7,14 +7,13 @@ class CategoryPage extends StatelessWidget {
   final String collectionName;
   //final Widget NavigationPushed;
 
-  
-final String? brandFilter;
+
 
 CategoryPage({
   super.key,
   required this.title,
   required this.collectionName,
-  this.brandFilter,
+
 });
 
 
@@ -106,9 +105,7 @@ CategoryPage({
       body: Padding(
         padding: const EdgeInsets.all(12),
         child: StreamBuilder<QuerySnapshot>(
-          stream: brandFilter == null
-         ? collection.snapshots()
-         : collection.where("brand", isEqualTo: brandFilter).snapshots(),
+          stream: collection.snapshots(),
 
           builder: (context, snapshot) {
             if (!snapshot.hasData) {
