@@ -1,8 +1,11 @@
 import 'package:ecommerce/data/products.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+
 class CartService {
   static const String cartKey = "cart";
+
+  
 
   // Sauvegarder le panier
   static Future<void> saveCart(List<Product> products) async {
