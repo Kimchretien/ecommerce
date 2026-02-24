@@ -1,5 +1,6 @@
 import 'package:ecommerce/data/products.dart';
 import 'package:ecommerce/pages/CartService_page.dart';
+import 'package:ecommerce/services/firebase/order_service.dart';
 import 'package:flutter/material.dart';
 
 class CartPage extends StatefulWidget {
@@ -82,11 +83,21 @@ class _CartPageState extends State<CartPage> {
           : Padding(
               padding: const EdgeInsets.all(8.0),
               child: ElevatedButton(
-                onPressed: () {
-                  // Ici tu déclenches le paiement
-                  // Après paiement :
-                  clearCart();
-                },
+                onPressed: () async {
+
+  // 1️⃣ créer commande Firebase
+                          String orderId =
+                              await OrderService.createOrder(cart, totalPrice);
+
+                          print("Commande créée : $orderId");
+
+                          // TEMPORAIRE (simulation paiement réussi)
+                          clearCart();
+
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text("Commande créée avec succès")),
+                          );
+                    },
                 child: Text("Payer (${cart.length} produits) - Total: $totalPrice FBU"),
               ),
             ),

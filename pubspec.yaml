@@ -39,6 +39,10 @@ dependencies:
   google_sign_in: ^6.2.1
   cloud_firestore: ^6.1.2
   shared_preferences: ^2.5.3
+  flutter_stripe_payment: ^0.0.18
+  cloud_functions: ^6.0.6
+  url_launcher: ^6.3.2
+  http: ^1.6.0
 
 dev_dependencies:
   flutter_test:
