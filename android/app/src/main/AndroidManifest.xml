@@ -30,6 +30,9 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+        <meta-data
+            android:name="com.stripe.android.publishableKey"
+            android:value="pk_test_51T4KyJBjojLkMY5ejDnPdMgCdWpIW45KI2AFfQe7kUP4Z8X15T6YlwehY6YNRTE0khzwJK4YKr9I0ILa0H6cJTHS00VMJ38Cls"/>
     </application>
     <!-- Required to query activities that can process text, see:
          https://developer.android.com/training/package-visibility and
